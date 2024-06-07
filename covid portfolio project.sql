@@ -28,7 +28,8 @@ from PortfolioProject..coviddeaths
 where location like '%state%' order by 1,2
 
 
-select location,max(total_cases) as highestinfrctioncount,MAX((TRY_CAST(total_cases AS NUMERIC(10, 2)) / NULLIF(TRY_CAST(population AS NUMERIC(10, 2)), 0)))* 100.0 as percentageofpopulationinfected
+select location,max(total_cases) as highestinfrctioncount,MAX((TRY_CAST(total_cases AS NUMERIC(10, 2)) / NULLIF(TRY_CAST(population AS NUMERIC(10, 2)), 0)))* 100.0 as 
+percentageofpopulationinfected
 from PortfolioProject..coviddeaths 
 Group by location,population
 order by percentageofpopulationinfected desc
@@ -49,12 +50,24 @@ where continent is not null
 Group by continent
 order by totaldeathcount desc
 
+select location,sum(cast(new_deaths as int)) as totaldeathcount 
+from PortfolioProject..coviddeaths
+where continent is not null
+and location not in('World', 'European Union', 'International')
+Group by location
+order by totaldeathcount desc
+
 --glibal numbers
 
-select sum(new_cases) as total_cases,sum(cast(new_deaths as int)) as total_deaths,sum(new_deaths)/sum(cast(new_deaths as int))/sum(new_cases)*100 as deathpercentage from portfolioproject..coviddeaths
+select sum(new_cases) as total_cases,sum(cast(new_deaths as int)) as total_deaths,sum(new_deaths)/sum(cast(new_deaths as int))/sum(new_cases)*100 as
+deathpercentage 
+from portfolioproject..coviddeaths
 where continent is not null
 
 order by 1,2
+
+
+
 
 
 --loomking at total population vs vaccinations
@@ -144,3 +157,18 @@ select * from percentpopulationvaccinated
 
 select *
  from #percentpopulationvaccinated
+
+
+
+ -- we take these out as they are not included in the above queries in and want to stay consistant
+ --- europrunion is part of europe
+
+
+ select location,sum(cast(new_deaths as int)) as totaldeathcount
+ from PortfolioProject..coviddeaths
+ where continent is null
+ and location not in ('World','European Union','International')
+group by location
+ order by totaldeathcount desc
+
+ select distinct(location),continent from PortfolioProject..coviddeaths
